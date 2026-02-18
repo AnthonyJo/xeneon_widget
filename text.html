@@ -44,28 +44,14 @@
             margin-top: 35px; margin-left: -5px;
         }
 
-        /* --- UPDATED READABILITY SECTION --- */
         .stats-bar {
-            display: flex; 
-            justify-content: space-between; 
-            padding: 15px 10px;
-            font-size: 0.75rem; /* Increased from 0.65 */
-            text-transform: uppercase; 
-            letter-spacing: 1.5px; /* Better letter definition */
-            color: #eee; /* Brighter off-white for labels */
-            border-top: 1px solid #333; /* More visible divider */
-            border-bottom: 1px solid #333;
-            margin-top: 8px;
+            display: flex; justify-content: space-between; padding: 12px 10px;
+            font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1px;
+            color: #444; border-top: 1px solid #1a1a1a; border-bottom: 1px solid #1a1a1a;
+            margin-top: 5px;
         }
 
-        .stat-val { 
-            color: #fff; /* High-contrast white for actual data */
-            font-weight: 700; 
-            display: block; 
-            font-size: 1.1rem; /* Significantly larger */
-            margin-top: 6px;
-            text-shadow: 0 0 10px rgba(0,0,0,0.5); /* Helps with clarity */
-        }
+        .stat-val { color: #999; font-weight: 600; display: block; font-size: 0.9rem; margin-top: 4px; }
 
         .forecast-wrapper {
             position: relative; width: 100%; height: 285px;
@@ -94,24 +80,28 @@
             <div>Sunrise <span class="stat-val" id="sunrise">--</span></div>
             <div>Sunset <span class="stat-val" id="sunset">--</span></div>
         </div>
-        <div class="forecast-wrapper" id="f-wrap"></div>
+        <div class="forecast-wrapper" id="f-wrap">
+            </div>
     </div>
 
     <script>
+        // 1. DYNAMIC COLOR ENGINE (15C - 30C)
         function getTempColor(t) {
             const minTemp = 15; const maxTemp = 30;
             let percent = (t - minTemp) / (maxTemp - minTemp);
             percent = Math.max(0, Math.min(1, percent));
-            const hue = 210 - (percent * 210); 
+            const hue = 210 - (percent * 210); // 210 (Blue) to 0 (Red)
             return `hsl(${hue}, 90%, 60%)`;
         }
 
+        // 2. TIME & DAY UPDATE
         function updateTime() {
             const now = new Date();
             document.getElementById('time').innerText = now.toLocaleTimeString('en-AU', { hour: '2-digit', minute: '2-digit', hour12: false });
             document.getElementById('day-name').innerText = now.toLocaleDateString('en-AU', { weekday: 'long' }).toUpperCase();
         }
 
+        // 3. WEATHER & COLOR SYNC
         async function updateWeather() {
             try {
                 const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=-37.81&longitude=144.96&current_weather=true&daily=sunrise,sunset&timezone=Australia%2FSydney');
@@ -128,19 +118,22 @@
             } catch (e) { console.log("Update failed"); }
         }
 
+        // 4. CACHE BUSTING IFRAME LOADER
         function loadIframe() {
             const cacheBuster = new Date().getTime();
             const url = `https://www.meteoblue.com/en/weather/widget/daily/melbourne_australia_2158177?geoloc=fixed&days=4&tempunit=CELSIUS&windunit=KILOMETER_PER_HOUR&coloured=coloured&pictoicon=1&maxtemp=1&mintemp=1&windspeed=1&winddir=1&layout=dark&cb=${cacheBuster}`;
             document.getElementById('f-wrap').innerHTML = `<iframe src="${url}" scrolling="NO" allowtransparency="true"></iframe>`;
         }
 
+        // Initial Start
         updateTime();
         updateWeather();
         loadIframe();
 
+        // Intervals
         setInterval(updateTime, 1000);
-        setInterval(updateWeather, 600000);
-        setInterval(() => location.reload(true), 1800000); 
+        setInterval(updateWeather, 600000); // Sync weather every 10 min
+        setInterval(() => location.reload(true), 1800000); // Full app refresh every 30 min
     </script>
 </body>
 </html>
