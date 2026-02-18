@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Melbourne Command Center - Compact</title>
+    <title>Melbourne Edge - Compact</title>
     <style>
         :root {
             --accent: #00d2ff;
@@ -29,15 +29,15 @@
             backdrop-filter: blur(30px);
             -webkit-backdrop-filter: blur(30px);
             border: 1px solid var(--border);
-            border-radius: 36px; /* Reduced from 40px */
-            padding: 36px; /* Reduced from 40px */
+            border-radius: 36px; /* -10% from 40px */
+            padding: 36px; 
             text-align: center;
-            width: 468px; /* Reduced from 520px */
+            width: 460px; /* -10% from 520px (rounded) */
             box-shadow: 0 30px 60px rgba(0,0,0,1);
         }
 
         #time {
-            font-size: 5rem; /* Reduced from 5.5rem */
+            font-size: 4.8rem; /* -10% from 5.5rem (approx) */
             font-weight: 800;
             margin: 0;
             line-height: 1;
@@ -48,30 +48,30 @@
         }
 
         #date {
-            font-size: 1rem; /* Reduced from 1.1rem */
+            font-size: 1rem; /* -10% from 1.1rem */
             text-transform: uppercase;
             letter-spacing: 4px;
             color: var(--accent);
-            margin: 10px 0 10px 0;
+            margin: 8px 0 15px 0;
             font-weight: 600;
         }
 
         .hero-temp {
-            font-size: 5rem; /* Reduced from 5.5rem */
+            font-size: 4.8rem; /* Scaled down */
             font-weight: 200;
-            margin: 10px 0;
+            margin: 5px 0;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
         .hero-temp span {
-            font-size: 1.3rem; /* Reduced from 1.5rem */
+            font-size: 1.3rem;
             color: var(--accent);
             font-weight: 800;
             align-self: flex-start;
-            margin-top: 18px;
-            margin-left: 5px;
+            margin-top: 15px;
+            margin-left: 4px;
         }
 
         .stats-bar {
@@ -79,22 +79,22 @@
             justify-content: space-around;
             border-top: 1px solid var(--border);
             border-bottom: 1px solid var(--border);
-            padding: 13px 0; /* Reduced from 15px */
-            margin: 18px 0; /* Reduced from 20px */
-            font-size: 0.65rem; /* Reduced from 0.75rem */
+            padding: 12px 0; /* Scaled */
+            margin: 18px 0;
+            font-size: 0.65rem; /* Scaled */
             text-transform: uppercase;
             letter-spacing: 1px;
             color: #888;
         }
 
-        .stat-val { color: #fff; font-weight: bold; display: block; font-size: 0.9rem; margin-top: 4px;}
+        .stat-val { color: #fff; font-weight: bold; display: block; font-size: 0.9rem; margin-top: 3px;}
 
-        /* ADJUSTED MASK FOR 90% SCALE */
+        /* Recalculated Mask for smaller scale */
         .forecast-mask {
             border-radius: 18px;
             overflow: hidden; 
             width: 100%;
-            height: 215px; /* Tuned for smaller scale */
+            height: 205px; /* Reduced to match scaled widget */
             position: relative;
         }
 
@@ -102,10 +102,10 @@
             border: none;
             filter: brightness(0.9) contrast(1.1);
             position: absolute;
-            top: -52px; /* Adjusted to hide coordinates at new scale */
+            top: -50px; /* Adjusted offset to keep coordinates hidden at 90% size */
             left: 0;
             width: 100%;
-            height: 320px;
+            height: 300px; /* Scaled height */
         }
     </style>
 </head>
@@ -148,7 +148,7 @@
                 document.getElementById('wind').innerText = Math.round(data.current_weather.windspeed) + ' km/h';
                 document.getElementById('sunrise').innerText = data.daily.sunrise[0].split('T')[1];
                 document.getElementById('sunset').innerText = data.daily.sunset[0].split('T')[1];
-            } catch (e) { console.error("Update failed."); }
+            } catch (e) { console.error("Sync failed."); }
         }
 
         setInterval(updateTime, 1000);
