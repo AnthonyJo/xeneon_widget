@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Melbourne Floating Dashboard</title>
+    <title>Melbourne Floating Dashboard - Thermal Range</title>
     <style>
         :root {
-            --accent: #00d2ff;
+            --temp-color: #00d2ff;
         }
 
-        /* Force pure black and remove all margins */
         body {
             margin: 0;
             padding: 0;
@@ -23,95 +22,90 @@
             overflow: hidden;
         }
 
-        /* Transparent container - no background, no border, no shadow */
         .container {
-            background: transparent !important;
-            border: none !important;
-            box-shadow: none !important;
             text-align: center;
             width: 420px;
+            display: flex;
+            flex-direction: column;
         }
 
         #time {
             font-size: 5.5rem;
             font-weight: 800;
             margin: 0;
-            line-height: 1;
+            line-height: 0.85; 
             letter-spacing: -4px;
-            color: #ffffff;
         }
 
-        #date {
-            font-size: 0.9rem;
+        #day-name {
+            font-size: 0.95rem;
             text-transform: uppercase;
-            letter-spacing: 5px;
-            color: var(--accent);
-            margin: 12px 0 5px 0;
-            font-weight: 600;
+            letter-spacing: 6px;
+            color: var(--temp-color);
+            margin: 5px 0 0 0;
+            font-weight: 700;
+            transition: color 1.5s ease;
         }
 
         .hero-temp {
-            font-size: 5rem;
+            font-size: 8rem; /* Even larger impact */
             font-weight: 200;
-            margin: 10px 0;
+            margin: -15px 0 0 0; /* Minimal gap */
             display: flex;
             align-items: center;
             justify-content: center;
+            color: var(--temp-color);
+            transition: color 1.5s ease;
         }
 
-        .hero-temp span {
-            font-size: 1.5rem;
-            color: var(--accent);
+        .hero-temp span.unit {
+            font-size: 2.2rem;
             font-weight: 700;
             align-self: flex-start;
-            margin-top: 15px;
-            margin-left: 5px;
+            margin-top: 35px;
+            margin-left: -5px;
         }
 
-        /* Flat stats row with no box */
         .stats-bar {
             display: flex;
             justify-content: space-between;
-            padding: 15px 10px;
-            margin-top: 10px;
+            padding: 12px 10px;
             font-size: 0.65rem;
             text-transform: uppercase;
             letter-spacing: 1px;
-            color: #555;
-            border-top: 1px solid #1a1a1a; /* Very faint line to keep structure */
-            background: transparent !important;
+            color: #444;
+            border-top: 1px solid #1a1a1a;
+            border-bottom: 1px solid #1a1a1a;
+            margin-top: 5px;
         }
 
         .stat-val { 
-            color: #bbbbbb; 
+            color: #999; 
             font-weight: 600; 
             display: block; 
             font-size: 0.9rem; 
             margin-top: 4px;
         }
 
-        /* Mask for the iframe - absolutely no background */
-        .forecast-mask {
-            background: transparent !important;
-            overflow: hidden; 
-            width: 100%;
-            height: 200px;
+        .forecast-wrapper {
             position: relative;
-            border: none !important;
+            width: 100%;
+            height: 285px;
+            overflow: hidden;
+            margin-top: 5px;
         }
 
         iframe {
-            border: none !important;
-            /* grayscale and contrast to make it look native to your UI */
-            filter: brightness(0.95) contrast(1.1) grayscale(0.2);
+            border: none;
+            width: 111%; 
+            height: 450px;
             position: absolute;
+            top: -65px;
+            left: 0;
             transform: scale(0.9);
             transform-origin: top left;
-            width: 111%; 
-            height: 400px;
-            top: -58px; 
-            left: 0;
-            background: transparent !important;
+            filter: brightness(0.85) contrast(1.1) grayscale(0.4);
+            pointer-events: none;
         }
     </style>
 </head>
@@ -119,10 +113,10 @@
 
     <div class="container">
         <div id="time">00:00</div>
-        <div id="date">LOADING...</div>
+        <div id="day-name">LOADING...</div>
 
         <div class="hero-temp">
-            <div id="cur-temp">--</div><span>°C</span>
+            <div id="cur-temp">--</div><span class="unit">°C</span>
         </div>
 
         <div class="stats-bar">
@@ -131,7 +125,7 @@
             <div>Sunset <span class="stat-val" id="sunset">--</span></div>
         </div>
 
-        <div class="forecast-mask">
+        <div class="forecast-wrapper">
             <iframe 
                 src="https://www.meteoblue.com/en/weather/widget/daily/melbourne_australia_2158177?geoloc=fixed&days=4&tempunit=CELSIUS&windunit=KILOMETER_PER_HOUR&coloured=coloured&pictoicon=1&maxtemp=1&mintemp=1&windspeed=1&winddir=1&layout=dark"  
                 scrolling="NO" allowtransparency="true">
@@ -140,21 +134,42 @@
     </div>
 
     <script>
+        // Updated color logic for 15C (Cold) to 30C (Hot)
+        function getTempColor(t) {
+            const minTemp = 15; 
+            const maxTemp = 30;
+            
+            // Normalize temp to a 0-1 range based on your new limits
+            let percent = (t - minTemp) / (maxTemp - minTemp);
+            percent = Math.max(0, Math.min(1, percent));
+            
+            // Map 0% (15C) to Hue 210 (Blue)
+            // Map 100% (30C) to Hue 0 (Red)
+            const hue = 210 - (percent * 210);
+            return `hsl(${hue}, 90%, 60%)`;
+        }
+
         function updateTime() {
             const now = new Date();
             document.getElementById('time').innerText = now.toLocaleTimeString('en-AU', { hour: '2-digit', minute: '2-digit', hour12: false });
-            document.getElementById('date').innerText = now.toLocaleDateString('en-AU', { weekday: 'long', month: 'short', day: 'numeric' }).toUpperCase();
+            document.getElementById('day-name').innerText = now.toLocaleDateString('en-AU', { weekday: 'long' }).toUpperCase();
         }
 
         async function updateWeather() {
             try {
                 const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=-37.81&longitude=144.96&current_weather=true&daily=sunrise,sunset&timezone=Australia%2FSydney');
                 const data = await res.json();
-                document.getElementById('cur-temp').innerText = Math.round(data.current_weather.temperature);
+                const temp = Math.round(data.current_weather.temperature);
+                
+                document.getElementById('cur-temp').innerText = temp;
                 document.getElementById('wind').innerText = Math.round(data.current_weather.windspeed) + ' km/h';
                 document.getElementById('sunrise').innerText = data.daily.sunrise[0].split('T')[1];
                 document.getElementById('sunset').innerText = data.daily.sunset[0].split('T')[1];
-            } catch (e) { console.error("Update failed."); }
+
+                const thermalColor = getTempColor(temp);
+                document.documentElement.style.setProperty('--temp-color', thermalColor);
+                
+            } catch (e) { console.error("Sync error."); }
         }
 
         setInterval(updateTime, 1000);
