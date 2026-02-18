@@ -3,107 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Melbourne Floating Dashboard - Thermal Range</title>
+    <title>Melbourne iCUE Dashboard</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
     <style>
-        :root {
-            --temp-color: #00d2ff;
-        }
+        :root { --temp-color: #00d2ff; }
 
         body {
-            margin: 0;
-            padding: 0;
+            margin: 0; padding: 0;
             background: #000000 !important; 
             color: white;
             font-family: 'Segoe UI', system-ui, sans-serif;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
+            height: 100vh; overflow: hidden;
         }
 
-        .container {
-            text-align: center;
-            width: 420px;
-            display: flex;
-            flex-direction: column;
-        }
+        .container { text-align: center; width: 420px; display: flex; flex-direction: column; }
 
         #time {
-            font-size: 5.5rem;
-            font-weight: 800;
-            margin: 0;
-            line-height: 0.85; 
-            letter-spacing: -4px;
+            font-size: 5.5rem; font-weight: 800; margin: 0;
+            line-height: 0.85; letter-spacing: -4px;
         }
 
         #day-name {
-            font-size: 0.95rem;
-            text-transform: uppercase;
-            letter-spacing: 6px;
-            color: var(--temp-color);
-            margin: 5px 0 0 0;
-            font-weight: 700;
+            font-size: 0.95rem; text-transform: uppercase; letter-spacing: 6px;
+            color: var(--temp-color); margin: 5px 0 0 0; font-weight: 700;
             transition: color 1.5s ease;
         }
 
         .hero-temp {
-            font-size: 8rem; /* Even larger impact */
-            font-weight: 200;
-            margin: -15px 0 0 0; /* Minimal gap */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--temp-color);
-            transition: color 1.5s ease;
+            font-size: 8rem; font-weight: 200; margin: -15px 0 0 0;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--temp-color); transition: color 1.5s ease;
         }
 
         .hero-temp span.unit {
-            font-size: 2.2rem;
-            font-weight: 700;
-            align-self: flex-start;
-            margin-top: 35px;
-            margin-left: -5px;
+            font-size: 2.2rem; font-weight: 700; align-self: flex-start;
+            margin-top: 35px; margin-left: -5px;
         }
 
+        /* --- UPDATED READABILITY SECTION --- */
         .stats-bar {
-            display: flex;
-            justify-content: space-between;
-            padding: 12px 10px;
-            font-size: 0.65rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #444;
-            border-top: 1px solid #1a1a1a;
-            border-bottom: 1px solid #1a1a1a;
-            margin-top: 5px;
+            display: flex; 
+            justify-content: space-between; 
+            padding: 15px 10px;
+            font-size: 0.75rem; /* Increased from 0.65 */
+            text-transform: uppercase; 
+            letter-spacing: 1.5px; /* Better letter definition */
+            color: #eee; /* Brighter off-white for labels */
+            border-top: 1px solid #333; /* More visible divider */
+            border-bottom: 1px solid #333;
+            margin-top: 8px;
         }
 
         .stat-val { 
-            color: #999; 
-            font-weight: 600; 
+            color: #fff; /* High-contrast white for actual data */
+            font-weight: 700; 
             display: block; 
-            font-size: 0.9rem; 
-            margin-top: 4px;
+            font-size: 1.1rem; /* Significantly larger */
+            margin-top: 6px;
+            text-shadow: 0 0 10px rgba(0,0,0,0.5); /* Helps with clarity */
         }
 
         .forecast-wrapper {
-            position: relative;
-            width: 100%;
-            height: 285px;
-            overflow: hidden;
-            margin-top: 5px;
+            position: relative; width: 100%; height: 285px;
+            overflow: hidden; margin-top: 5px;
         }
 
         iframe {
-            border: none;
-            width: 111%; 
-            height: 450px;
-            position: absolute;
-            top: -65px;
-            left: 0;
-            transform: scale(0.9);
-            transform-origin: top left;
+            border: none; width: 111%; height: 450px;
+            position: absolute; top: -65px; left: 0;
+            transform: scale(0.9); transform-origin: top left;
             filter: brightness(0.85) contrast(1.1) grayscale(0.4);
             pointer-events: none;
         }
@@ -114,38 +86,23 @@
     <div class="container">
         <div id="time">00:00</div>
         <div id="day-name">LOADING...</div>
-
         <div class="hero-temp">
             <div id="cur-temp">--</div><span class="unit">°C</span>
         </div>
-
         <div class="stats-bar">
             <div>Wind <span class="stat-val" id="wind">--</span></div>
             <div>Sunrise <span class="stat-val" id="sunrise">--</span></div>
             <div>Sunset <span class="stat-val" id="sunset">--</span></div>
         </div>
-
-        <div class="forecast-wrapper">
-            <iframe 
-                src="https://www.meteoblue.com/en/weather/widget/daily/melbourne_australia_2158177?geoloc=fixed&days=4&tempunit=CELSIUS&windunit=KILOMETER_PER_HOUR&coloured=coloured&pictoicon=1&maxtemp=1&mintemp=1&windspeed=1&winddir=1&layout=dark"  
-                scrolling="NO" allowtransparency="true">
-            </iframe>
-        </div>
+        <div class="forecast-wrapper" id="f-wrap"></div>
     </div>
 
     <script>
-        // Updated color logic for 15C (Cold) to 30C (Hot)
         function getTempColor(t) {
-            const minTemp = 15; 
-            const maxTemp = 30;
-            
-            // Normalize temp to a 0-1 range based on your new limits
+            const minTemp = 15; const maxTemp = 30;
             let percent = (t - minTemp) / (maxTemp - minTemp);
             percent = Math.max(0, Math.min(1, percent));
-            
-            // Map 0% (15C) to Hue 210 (Blue)
-            // Map 100% (30C) to Hue 0 (Red)
-            const hue = 210 - (percent * 210);
+            const hue = 210 - (percent * 210); 
             return `hsl(${hue}, 90%, 60%)`;
         }
 
@@ -168,14 +125,22 @@
 
                 const thermalColor = getTempColor(temp);
                 document.documentElement.style.setProperty('--temp-color', thermalColor);
-                
-            } catch (e) { console.error("Sync error."); }
+            } catch (e) { console.log("Update failed"); }
         }
+
+        function loadIframe() {
+            const cacheBuster = new Date().getTime();
+            const url = `https://www.meteoblue.com/en/weather/widget/daily/melbourne_australia_2158177?geoloc=fixed&days=4&tempunit=CELSIUS&windunit=KILOMETER_PER_HOUR&coloured=coloured&pictoicon=1&maxtemp=1&mintemp=1&windspeed=1&winddir=1&layout=dark&cb=${cacheBuster}`;
+            document.getElementById('f-wrap').innerHTML = `<iframe src="${url}" scrolling="NO" allowtransparency="true"></iframe>`;
+        }
+
+        updateTime();
+        updateWeather();
+        loadIframe();
 
         setInterval(updateTime, 1000);
         setInterval(updateWeather, 600000);
-        updateTime();
-        updateWeather();
+        setInterval(() => location.reload(true), 1800000); 
     </script>
 </body>
 </html>
