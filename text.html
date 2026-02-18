@@ -20,24 +20,24 @@
             height: 100vh; overflow: hidden;
         }
 
-        /* Added padding-top to move content down from the edge */
+        /* Pushed down further to 60px to clear top bezel/clipping */
         .container { 
             text-align: center; 
             width: 420px; 
             display: flex; 
             flex-direction: column; 
-            padding-top: 20px; 
+            padding-top: 60px; 
         }
 
-        /* Increased line-height to 1.0 to prevent top clipping of tall numerals */
+        /* Relaxed line-height to 1.2 to provide maximum top clearance for numerals */
         #time {
             font-size: 5.5rem; font-weight: 800; margin: 0;
-            line-height: 1.0; letter-spacing: -4px;
+            line-height: 1.2; letter-spacing: -4px;
         }
 
         #day-name {
             font-size: 0.95rem; text-transform: uppercase; letter-spacing: 6px;
-            color: var(--temp-color); margin: 5px 0 0 0; font-weight: 700;
+            color: var(--temp-color); margin: 0; font-weight: 700;
             transition: color 1.5s ease;
         }
 
@@ -52,14 +52,28 @@
             margin-top: 35px; margin-left: -5px;
         }
 
+        /* --- STYLED FOR MAXIMUM READABILITY ON BLACK --- */
         .stats-bar {
-            display: flex; justify-content: space-between; padding: 12px 10px;
-            font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1px;
-            color: #444; border-top: 1px solid #1a1a1a; border-bottom: 1px solid #1a1a1a;
-            margin-top: 5px;
+            display: flex; 
+            justify-content: space-between; 
+            padding: 15px 10px;
+            font-size: 0.8rem;
+            text-transform: uppercase; 
+            letter-spacing: 1.5px; 
+            color: #00FFFF; /* Electric Cyan for labels */
+            border-top: 1px solid #333; 
+            border-bottom: 1px solid #333;
+            margin-top: 10px;
         }
 
-        .stat-val { color: #999; font-weight: 600; display: block; font-size: 0.9rem; margin-top: 4px; }
+        .stat-val { 
+            color: #FFFFFF; /* Pure White for the data values */
+            font-weight: 800; 
+            display: block; 
+            font-size: 1.2rem; 
+            margin-top: 6px;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.3); /* Subtle cyan glow */
+        }
 
         .forecast-wrapper {
             position: relative; width: 100%; height: 285px;
@@ -88,8 +102,7 @@
             <div>Sunrise <span class="stat-val" id="sunrise">--</span></div>
             <div>Sunset <span class="stat-val" id="sunset">--</span></div>
         </div>
-        <div class="forecast-wrapper" id="f-wrap">
-            </div>
+        <div class="forecast-wrapper" id="f-wrap"></div>
     </div>
 
     <script>
@@ -103,8 +116,11 @@
 
         function updateTime() {
             const now = new Date();
+            const day = now.toLocaleDateString('en-AU', { weekday: 'long' }).toUpperCase();
+            const dateStr = now.toLocaleDateString('en-AU', { day: '2-digit', month: '2-digit', year: 'numeric' });
+            
             document.getElementById('time').innerText = now.toLocaleTimeString('en-AU', { hour: '2-digit', minute: '2-digit', hour12: false });
-            document.getElementById('day-name').innerText = now.toLocaleDateString('en-AU', { weekday: 'long' }).toUpperCase();
+            document.getElementById('day-name').innerText = `${day} ${dateStr}`;
         }
 
         async function updateWeather() {
@@ -126,7 +142,8 @@
         function loadIframe() {
             const cacheBuster = new Date().getTime();
             const url = `https://www.meteoblue.com/en/weather/widget/daily/melbourne_australia_2158177?geoloc=fixed&days=4&tempunit=CELSIUS&windunit=KILOMETER_PER_HOUR&coloured=coloured&pictoicon=1&maxtemp=1&mintemp=1&windspeed=1&winddir=1&layout=dark&cb=${cacheBuster}`;
-            document.getElementById('f-wrap').innerHTML = `<iframe src="${url}" scrolling="NO" allowtransparency="true"></iframe>`;
+            const wrapper = document.getElementById('f-wrap');
+            wrapper.innerHTML = `<iframe src="${url}" scrolling="NO" allowtransparency="true"></iframe>`;
         }
 
         updateTime();
@@ -134,7 +151,7 @@
         loadIframe();
 
         setInterval(updateTime, 1000);
-        setInterval(updateWeather, 600000); 
+        setInterval(updateWeather, 600000);
         setInterval(() => location.reload(true), 1800000); 
     </script>
 </body>
