@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Melbourne Command Center</title>
+    <title>Melbourne Command Center - Compact</title>
     <style>
         :root {
             --accent: #00d2ff;
@@ -29,15 +29,15 @@
             backdrop-filter: blur(30px);
             -webkit-backdrop-filter: blur(30px);
             border: 1px solid var(--border);
-            border-radius: 40px;
-            padding: 40px;
+            border-radius: 36px; /* Reduced from 40px */
+            padding: 36px; /* Reduced from 40px */
             text-align: center;
-            width: 520px;
+            width: 468px; /* Reduced from 520px */
             box-shadow: 0 30px 60px rgba(0,0,0,1);
         }
 
         #time {
-            font-size: 5.5rem;
+            font-size: 5rem; /* Reduced from 5.5rem */
             font-weight: 800;
             margin: 0;
             line-height: 1;
@@ -48,7 +48,7 @@
         }
 
         #date {
-            font-size: 1.1rem;
+            font-size: 1rem; /* Reduced from 1.1rem */
             text-transform: uppercase;
             letter-spacing: 4px;
             color: var(--accent);
@@ -57,7 +57,7 @@
         }
 
         .hero-temp {
-            font-size: 5.5rem;
+            font-size: 5rem; /* Reduced from 5.5rem */
             font-weight: 200;
             margin: 10px 0;
             display: flex;
@@ -66,11 +66,11 @@
         }
 
         .hero-temp span {
-            font-size: 1.5rem;
+            font-size: 1.3rem; /* Reduced from 1.5rem */
             color: var(--accent);
             font-weight: 800;
             align-self: flex-start;
-            margin-top: 20px;
+            margin-top: 18px;
             margin-left: 5px;
         }
 
@@ -79,22 +79,22 @@
             justify-content: space-around;
             border-top: 1px solid var(--border);
             border-bottom: 1px solid var(--border);
-            padding: 15px 0;
-            margin: 20px 0;
-            font-size: 0.75rem;
+            padding: 13px 0; /* Reduced from 15px */
+            margin: 18px 0; /* Reduced from 20px */
+            font-size: 0.65rem; /* Reduced from 0.75rem */
             text-transform: uppercase;
             letter-spacing: 1px;
             color: #888;
         }
 
-        .stat-val { color: #fff; font-weight: bold; display: block; font-size: 1rem; margin-top: 4px;}
+        .stat-val { color: #fff; font-weight: bold; display: block; font-size: 0.9rem; margin-top: 4px;}
 
-        /* THE FIX: A Window that hides the top, but has room for the bottom */
+        /* ADJUSTED MASK FOR 90% SCALE */
         .forecast-mask {
-            border-radius: 20px;
+            border-radius: 18px;
             overflow: hidden; 
             width: 100%;
-            height: 230px; /* This is the 'viewing window' size */
+            height: 215px; /* Tuned for smaller scale */
             position: relative;
         }
 
@@ -102,10 +102,10 @@
             border: none;
             filter: brightness(0.9) contrast(1.1);
             position: absolute;
-            top: -55px; /* Pulls the coordinates UP out of sight */
+            top: -52px; /* Adjusted to hide coordinates at new scale */
             left: 0;
             width: 100%;
-            height: 350px; /* INCREASED: This ensures the bottom content stays visible */
+            height: 320px;
         }
     </style>
 </head>
