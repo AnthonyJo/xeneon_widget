@@ -20,11 +20,19 @@
             height: 100vh; overflow: hidden;
         }
 
-        .container { text-align: center; width: 420px; display: flex; flex-direction: column; }
+        /* Added padding-top to move content down from the edge */
+        .container { 
+            text-align: center; 
+            width: 420px; 
+            display: flex; 
+            flex-direction: column; 
+            padding-top: 20px; 
+        }
 
+        /* Increased line-height to 1.0 to prevent top clipping of tall numerals */
         #time {
             font-size: 5.5rem; font-weight: 800; margin: 0;
-            line-height: 0.85; letter-spacing: -4px;
+            line-height: 1.0; letter-spacing: -4px;
         }
 
         #day-name {
@@ -34,7 +42,7 @@
         }
 
         .hero-temp {
-            font-size: 8rem; font-weight: 200; margin: -15px 0 0 0;
+            font-size: 8rem; font-weight: 200; margin: -10px 0 0 0;
             display: flex; align-items: center; justify-content: center;
             color: var(--temp-color); transition: color 1.5s ease;
         }
@@ -85,23 +93,20 @@
     </div>
 
     <script>
-        // 1. DYNAMIC COLOR ENGINE (15C - 30C)
         function getTempColor(t) {
             const minTemp = 15; const maxTemp = 30;
             let percent = (t - minTemp) / (maxTemp - minTemp);
             percent = Math.max(0, Math.min(1, percent));
-            const hue = 210 - (percent * 210); // 210 (Blue) to 0 (Red)
+            const hue = 210 - (percent * 210); 
             return `hsl(${hue}, 90%, 60%)`;
         }
 
-        // 2. TIME & DAY UPDATE
         function updateTime() {
             const now = new Date();
             document.getElementById('time').innerText = now.toLocaleTimeString('en-AU', { hour: '2-digit', minute: '2-digit', hour12: false });
             document.getElementById('day-name').innerText = now.toLocaleDateString('en-AU', { weekday: 'long' }).toUpperCase();
         }
 
-        // 3. WEATHER & COLOR SYNC
         async function updateWeather() {
             try {
                 const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=-37.81&longitude=144.96&current_weather=true&daily=sunrise,sunset&timezone=Australia%2FSydney');
@@ -118,22 +123,19 @@
             } catch (e) { console.log("Update failed"); }
         }
 
-        // 4. CACHE BUSTING IFRAME LOADER
         function loadIframe() {
             const cacheBuster = new Date().getTime();
             const url = `https://www.meteoblue.com/en/weather/widget/daily/melbourne_australia_2158177?geoloc=fixed&days=4&tempunit=CELSIUS&windunit=KILOMETER_PER_HOUR&coloured=coloured&pictoicon=1&maxtemp=1&mintemp=1&windspeed=1&winddir=1&layout=dark&cb=${cacheBuster}`;
             document.getElementById('f-wrap').innerHTML = `<iframe src="${url}" scrolling="NO" allowtransparency="true"></iframe>`;
         }
 
-        // Initial Start
         updateTime();
         updateWeather();
         loadIframe();
 
-        // Intervals
         setInterval(updateTime, 1000);
-        setInterval(updateWeather, 600000); // Sync weather every 10 min
-        setInterval(() => location.reload(true), 1800000); // Full app refresh every 30 min
+        setInterval(updateWeather, 600000); 
+        setInterval(() => location.reload(true), 1800000); 
     </script>
 </body>
 </html>
