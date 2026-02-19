@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modern Global iCUE</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;700;800&display=swap" rel="stylesheet">
     
     <style>
         :root { --temp-color: #00d2ff; }
@@ -13,9 +12,11 @@
             margin: 0; padding: 0;
             background: #000000 !important; 
             color: white;
-            font-family: 'Inter', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             display: flex; align-items: center; justify-content: center;
             height: 100vh; overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         .container { 
@@ -23,18 +24,16 @@
             width: 440px; 
             display: flex; 
             flex-direction: column; 
-            padding-top: 15px; /* Slightly reduced to account for larger header */
+            padding-top: 15px;
         }
 
-        /* INCREASED SIZE (+40%) AND UNIQUE COLOR FOR DATE */
         #day-name {
-            font-size: 1.7rem; /* Increased from 1.2rem */
+            font-size: 1.6rem; 
             text-transform: uppercase; 
-            letter-spacing: 6px;
-            color: #E0E0E0; /* Fixed light grey/white, independent of temperature */
+            letter-spacing: 4px;
+            color: #E0E0E0; 
             margin-bottom: 10px; 
-            font-weight: 800;
-            transition: color 0.5s ease;
+            font-weight: 700;
         }
 
         .top-row {
@@ -45,23 +44,22 @@
             margin-bottom: 5px;
         }
 
-        /* SLEEK TEMPERATURE */
         .hero-temp {
-            font-size: 7.5rem; 
+            font-size: 8rem; 
             font-weight: 200; 
             display: flex; 
             align-items: center;
             color: var(--temp-color); 
             transition: color 1.5s ease;
-            line-height: 0.9;
-            letter-spacing: -5px;
+            line-height: 0.8;
+            letter-spacing: -4px;
         }
 
         .hero-temp span.unit {
             font-size: 1.8rem; 
-            font-weight: 700; 
+            font-weight: 600; 
             align-self: flex-start;
-            margin-top: 15px; 
+            margin-top: 18px; 
             margin-left: -2px;
         }
 
@@ -70,31 +68,40 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
+            align-items: flex-end;
         }
 
-        /* BOLD MELBOURNE TIME */
         #time {
-            font-size: 4.8rem; 
-            font-weight: 800; 
+            font-size: 4.2rem; 
+            font-weight: 700; 
             margin: 0;
             line-height: 0.85; 
-            letter-spacing: -3px;
+            letter-spacing: -2px;
+            text-transform: uppercase;
         }
 
-        /* LARGE WORLD CLOCKS */
+        /* WORLD CLOCKS - INCREASED BY 45% */
         .world-clocks {
-            margin-top: 8px;
-            font-size: 1.25rem; 
-            color: #777; 
+            margin-top: 15px;
+            font-size: 1.38rem; /* Increased from ~0.95rem */
+            color: #86868b; 
             text-transform: uppercase;
-            letter-spacing: 1px;
-            line-height: 1.3;
+            letter-spacing: 0.5px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px; /* Slightly more gap for larger text */
+        }
+
+        .clock-row {
+            display: flex;
+            justify-content: space-between;
+            width: 210px; /* Widened to support larger font size */
         }
 
         .world-clocks span { 
             color: #fff; 
-            font-weight: 700; 
-            margin-left: 6px; 
+            font-weight: 600; 
+            margin-left: 10px;
         }
 
         .stats-bar {
@@ -103,18 +110,18 @@
             padding: 15px 10px;
             font-size: 0.7rem;
             text-transform: uppercase; 
-            letter-spacing: 2px; 
-            color: #00FFFF; /* Cyan accents */
-            border-top: 1px solid #222; 
-            border-bottom: 1px solid #222;
+            letter-spacing: 1.5px; 
+            color: #00FFFF; 
+            border-top: 1px solid #1c1c1e; 
+            border-bottom: 1px solid #1c1c1e;
             margin-top: 10px;
         }
 
         .stat-val { 
             color: #FFFFFF; 
-            font-weight: 700; 
+            font-weight: 600; 
             display: block; 
-            font-size: 1.2rem; 
+            font-size: 1.1rem; 
             margin-top: 4px;
         }
 
@@ -127,7 +134,7 @@
             border: none; width: 111%; height: 450px;
             position: absolute; top: -65px; left: 0;
             transform: scale(0.9); transform-origin: top left;
-            filter: brightness(0.8) contrast(1.2) grayscale(0.5);
+            filter: brightness(0.8) contrast(1.1) grayscale(0.6);
             pointer-events: none;
         }
     </style>
@@ -145,8 +152,8 @@
             <div class="time-stack">
                 <div id="time">00:00</div>
                 <div class="world-clocks">
-                    UK S <span id="time-ldn">00:00</span><br>
-                    US W <span id="time-cal">00:00</span>
+                    <div class="clock-row">UK S <span id="time-ldn">--:-- AM</span></div>
+                    <div class="clock-row">US W <span id="time-cal">--:-- AM</span></div>
                 </div>
             </div>
         </div>
@@ -171,19 +178,20 @@
 
         function updateTime() {
             const now = new Date();
+            const options12 = { hour: 'numeric', minute: '2-digit', hour12: true };
             
-            const melOptions = { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Australia/Melbourne' };
-            document.getElementById('time').innerText = new Intl.DateTimeFormat('en-AU', melOptions).format(now);
+            const melTime = new Intl.DateTimeFormat('en-AU', { ...options12, timeZone: 'Australia/Melbourne' }).format(now);
+            document.getElementById('time').innerText = melTime;
             
             const day = now.toLocaleDateString('en-AU', { weekday: 'long', timeZone: 'Australia/Melbourne' }).toUpperCase();
             const dateStr = now.toLocaleDateString('en-AU', { day: '2-digit', month: 'short', timeZone: 'Australia/Melbourne' }).toUpperCase();
             document.getElementById('day-name').innerText = `${day} | ${dateStr}`;
 
-            const ldnOptions = { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Europe/London' };
-            document.getElementById('time-ldn').innerText = new Intl.DateTimeFormat('en-GB', ldnOptions).format(now);
+            const ldnTime = new Intl.DateTimeFormat('en-GB', { ...options12, timeZone: 'Europe/London' }).format(now);
+            document.getElementById('time-ldn').innerText = ldnTime;
 
-            const calOptions = { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'America/Los_Angeles' };
-            document.getElementById('time-cal').innerText = new Intl.DateTimeFormat('en-US', calOptions).format(now);
+            const calTime = new Intl.DateTimeFormat('en-US', { ...options12, timeZone: 'America/Los_Angeles' }).format(now);
+            document.getElementById('time-cal').innerText = calTime;
         }
 
         async function updateWeather() {
@@ -194,8 +202,14 @@
                 
                 document.getElementById('cur-temp').innerText = temp;
                 document.getElementById('wind').innerText = Math.round(data.current_weather.windspeed) + ' km/h';
-                document.getElementById('sunrise').innerText = data.daily.sunrise[0].split('T')[1];
-                document.getElementById('sunset').innerText = data.daily.sunset[0].split('T')[1];
+                
+                const formatSun = (iso) => {
+                    const d = new Date(iso);
+                    return d.toLocaleTimeString('en-AU', { hour: 'numeric', minute: '2-digit', hour12: true }).toUpperCase();
+                };
+
+                document.getElementById('sunrise').innerText = formatSun(data.daily.sunrise[0]);
+                document.getElementById('sunset').innerText = formatSun(data.daily.sunset[0]);
 
                 const thermalColor = getTempColor(temp);
                 document.documentElement.style.setProperty('--temp-color', thermalColor);
